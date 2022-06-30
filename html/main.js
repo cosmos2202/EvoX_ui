@@ -7500,11 +7500,9 @@ var MuscleWidgetComponent = /** @class */ (function () {
         this.bottomMargin = 85;
         this.subscription = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subscription"]();
         this.chartsData = [];
-        console.log('constructor<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
     }
     Object.defineProperty(MuscleWidgetComponent.prototype, "chartConfig", {
         set: function (chartConfig) {
-            console.log('chartConfig change<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
             this._chartConfig = chartConfig;
             this.setupChart();
             this.renderChart();
@@ -7533,7 +7531,6 @@ var MuscleWidgetComponent = /** @class */ (function () {
     };
     MuscleWidgetComponent.prototype.ngOnDestroy = function () {
         if (this.subscription) {
-            console.log('unsubscribe<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
             this.subscription.unsubscribe();
             this.chart.destroy();
             this.chart = null;
@@ -7542,7 +7539,6 @@ var MuscleWidgetComponent = /** @class */ (function () {
     MuscleWidgetComponent.prototype.ngOnInit = function () {
     };
     MuscleWidgetComponent.prototype.setupChart = function () {
-        ('setupChart<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
         if (this.chart) {
             this.chart.destroy();
             this.chart = null;
@@ -7614,7 +7610,6 @@ var MuscleWidgetComponent = /** @class */ (function () {
     };
     MuscleWidgetComponent.prototype.renderChart = function () {
         var _this = this;
-        ('renderChart<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
         this.width1 = (window.innerWidth - this._chartConfig.primaryPercentageLabelXPosition);
         this.width1a = (window.innerWidth - this._chartConfig.primaryPercentageLabelXPosition + 100);
         this.width2 = (window.innerWidth - this._chartConfig.secondaryPercentageLabelXPosition);
