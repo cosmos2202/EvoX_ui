@@ -67,8 +67,11 @@ export class MuscleWidgetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subscription)
+    if (this.subscription) {
       this.subscription.unsubscribe()
+      this.chart.destroy()
+      this.chart = null
+    }
   }
  
   ngOnInit() {  
@@ -78,6 +81,7 @@ export class MuscleWidgetComponent implements OnInit, OnDestroy {
   {
     if (this.chart) {
       this.chart.destroy()
+      this.chart = null
       this.group = null
       this.label1 = null
       this.label1a = null
@@ -159,53 +163,55 @@ export class MuscleWidgetComponent implements OnInit, OnDestroy {
       ])),
       catchError(_ => EMPTY))
       .subscribe(([currency, chartData]) => {
-        const data = []
-        for (const value of chartData.data) {
-          data.push([value.date, value.rate])
-        }
+        if (this.chart) {
+          const data = []
+          for (const value of chartData.data) {
+            data.push([value.date, value.rate])
+          }
 
-        this.chartsData = [
-          {type: 'area', name: this._chartConfig.dataSeriesName, data}
-        ]
-        if (this.chart && this.chart.ref.series) {
-          while (this.chart.ref.series.length > 0)
-            this.chart.ref.series[0].remove(false)
-        }
-        
-        this.chart.addSeries(this.chartsData[0], true, true)
-
-        let price = currency.data[0].price
-        let FV = data[data.length - 1][1]
-        let IV = data[data.length - this._chartConfig.points][1]
-        let priceChange = (FV - IV) / IV * 100
-        let btc = currency.data[0].price / currency.data[1].price
-        // FV = data[data.length - 1][1]
-        // IV = data[data.length - this._chartConfig.points - 1][1]
-        let btcChange = 0 //(FV - IV) / IV * 100
-
-        let primaryPercentage = {fontSize: '16px', color: priceChange >=0 ? 'green' : 'red', fontWeight:'600'}
-        let secondaryPercentage = {fontSize: '12px', color: btcChange >=0 ? 'green' : 'red'}
-
-        if (!this.group) {
-          this.group = this.chart.ref.renderer.g('customLabels')
-          this.group.renderer.image(this._chartConfig.imageLocation, this._chartConfig.imageXPosition, this._chartConfig.imageYPosition, this._chartConfig.imageHeight, this._chartConfig.imageWidth).attr({zIndex: 90}).add()
-          this.group.renderer.label(this._chartConfig.coin, this._chartConfig.coinXPosition, this._chartConfig.coinYPosition).css(this._chartConfig.coinStyle).attr({zIndex: 91}).add()
-          this.group.renderer.label(this._chartConfig.coinName, this._chartConfig.coinNameXPosition, this._chartConfig.coinNameYPosition).css(this._chartConfig.coinNameStyle).attr({zIndex: 92}).add()
+          this.chartsData = [
+            {type: 'area', name: this._chartConfig.dataSeriesName, data}
+          ]
+          if (this.chart.ref.series) {
+            while (this.chart.ref.series.length > 0)
+              this.chart.ref.series[0].remove(false)
+          }
           
-          this.label1 = this.group.renderer.label(`$ ${price.toFixed(this._chartConfig.primaryDecimalPlaces)}`, this.width1, this._chartConfig.primaryPercentageLabelYPosition).css(this._chartConfig.primaryPercentageLabelStyle).attr({zIndex: 93}).add()
-          this.label1a = this.group.renderer.label(`${priceChange.toFixed(this._chartConfig.primaryPercentDecimalPlaces)}%`, this.width1a, this._chartConfig.primaryPercentageLabelYPosition).css(primaryPercentage).attr({zIndex: 94}).add()
-          
-          this.label2 = this.group.renderer.label(`B ${btc.toFixed(this._chartConfig.secondaryDecimalPlaces)}`, this.width2, this._chartConfig.secondaryPercentageLabelYPosition).css(this._chartConfig.secondaryPercentageLabelStyle).attr({zIndex: 95}).add()
-          this.label2a = this.group.renderer.label(`${btcChange.toFixed(this._chartConfig.secondaryPercentDecimalPlaces)}%`, this.width2a, this._chartConfig.secondaryPercentageLabelYPosition).css(secondaryPercentage).attr({zIndex: 96}).add()
+          this.chart.addSeries(this.chartsData[0], true, true)
 
-          this.label3 = this.group.renderer.label(`This widget fetch data from Live Coin Watch [LCW]`, 50, this.height3).css({fontSize: '14px', color: 'white', fontWeight: '800'}).attr({zIndex: 97}).add()
+          let price = currency.data[0].price
+          let FV = data[data.length - 1][1]
+          let IV = data[data.length - this._chartConfig.points][1]
+          let priceChange = (FV - IV) / IV * 100
+          let btc = currency.data[0].price / currency.data[1].price
+          // FV = data[data.length - 1][1]
+          // IV = data[data.length - this._chartConfig.points - 1][1]
+          let btcChange = 0 //(FV - IV) / IV * 100
 
-        }
-        else {
-          this.label1.attr({text: `$ ${price.toFixed(this._chartConfig.primaryDecimalPlaces)}`})
-          this.label1a.attr({text: `${priceChange.toFixed(this._chartConfig.primaryPercentDecimalPlaces)}%`})
-          this.label2.attr({text: `B ${btc.toFixed(this._chartConfig.secondaryDecimalPlaces)}`})
-          this.label2a.attr({text: `${btcChange.toFixed(this._chartConfig.secondaryPercentDecimalPlaces)}%`})
+          let primaryPercentage = {fontSize: '16px', color: priceChange >=0 ? 'green' : 'red', fontWeight:'600'}
+          let secondaryPercentage = {fontSize: '12px', color: btcChange >=0 ? 'green' : 'red'}
+
+          if (!this.group) {
+            this.group = this.chart.ref.renderer.g('customLabels')
+            this.group.renderer.image(this._chartConfig.imageLocation, this._chartConfig.imageXPosition, this._chartConfig.imageYPosition, this._chartConfig.imageHeight, this._chartConfig.imageWidth).attr({zIndex: 90}).add()
+            this.group.renderer.label(this._chartConfig.coin, this._chartConfig.coinXPosition, this._chartConfig.coinYPosition).css(this._chartConfig.coinStyle).attr({zIndex: 91}).add()
+            this.group.renderer.label(this._chartConfig.coinName, this._chartConfig.coinNameXPosition, this._chartConfig.coinNameYPosition).css(this._chartConfig.coinNameStyle).attr({zIndex: 92}).add()
+            
+            this.label1 = this.group.renderer.label(`$ ${price.toFixed(this._chartConfig.primaryDecimalPlaces)}`, this.width1, this._chartConfig.primaryPercentageLabelYPosition).css(this._chartConfig.primaryPercentageLabelStyle).attr({zIndex: 93}).add()
+            this.label1a = this.group.renderer.label(`${priceChange.toFixed(this._chartConfig.primaryPercentDecimalPlaces)}%`, this.width1a, this._chartConfig.primaryPercentageLabelYPosition).css(primaryPercentage).attr({zIndex: 94}).add()
+            
+            this.label2 = this.group.renderer.label(`B ${btc.toFixed(this._chartConfig.secondaryDecimalPlaces)}`, this.width2, this._chartConfig.secondaryPercentageLabelYPosition).css(this._chartConfig.secondaryPercentageLabelStyle).attr({zIndex: 95}).add()
+            this.label2a = this.group.renderer.label(`${btcChange.toFixed(this._chartConfig.secondaryPercentDecimalPlaces)}%`, this.width2a, this._chartConfig.secondaryPercentageLabelYPosition).css(secondaryPercentage).attr({zIndex: 96}).add()
+
+            this.label3 = this.group.renderer.label(`This widget fetch data from Live Coin Watch [LCW]`, 50, this.height3).css({fontSize: '14px', color: 'white', fontWeight: '800'}).attr({zIndex: 97}).add()
+
+          }
+          else {
+            this.label1.attr({text: `$ ${price.toFixed(this._chartConfig.primaryDecimalPlaces)}`})
+            this.label1a.attr({text: `${priceChange.toFixed(this._chartConfig.primaryPercentDecimalPlaces)}%`})
+            this.label2.attr({text: `B ${btc.toFixed(this._chartConfig.secondaryDecimalPlaces)}`})
+            this.label2a.attr({text: `${btcChange.toFixed(this._chartConfig.secondaryPercentDecimalPlaces)}%`})
+          }
         }
 
       })

@@ -7500,9 +7500,11 @@ var MuscleWidgetComponent = /** @class */ (function () {
         this.bottomMargin = 85;
         this.subscription = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subscription"]();
         this.chartsData = [];
+        console.log('constructor<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
     }
     Object.defineProperty(MuscleWidgetComponent.prototype, "chartConfig", {
         set: function (chartConfig) {
+            console.log('chartConfig change<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
             this._chartConfig = chartConfig;
             this.setupChart();
             this.renderChart();
@@ -7530,14 +7532,20 @@ var MuscleWidgetComponent = /** @class */ (function () {
         }
     };
     MuscleWidgetComponent.prototype.ngOnDestroy = function () {
-        if (this.subscription)
+        if (this.subscription) {
+            console.log('unsubscribe<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
             this.subscription.unsubscribe();
+            this.chart.destroy();
+            this.chart = null;
+        }
     };
     MuscleWidgetComponent.prototype.ngOnInit = function () {
     };
     MuscleWidgetComponent.prototype.setupChart = function () {
+        ('setupChart<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
         if (this.chart) {
             this.chart.destroy();
+            this.chart = null;
             this.group = null;
             this.label1 = null;
             this.label1a = null;
@@ -7606,6 +7614,7 @@ var MuscleWidgetComponent = /** @class */ (function () {
     };
     MuscleWidgetComponent.prototype.renderChart = function () {
         var _this = this;
+        ('renderChart<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
         this.width1 = (window.innerWidth - this._chartConfig.primaryPercentageLabelXPosition);
         this.width1a = (window.innerWidth - this._chartConfig.primaryPercentageLabelXPosition + 100);
         this.width2 = (window.innerWidth - this._chartConfig.secondaryPercentageLabelXPosition);
@@ -7617,45 +7626,47 @@ var MuscleWidgetComponent = /** @class */ (function () {
         ]); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(function (_) { return rxjs__WEBPACK_IMPORTED_MODULE_2__["EMPTY"]; }))
             .subscribe(function (_a) {
             var currency = _a[0], chartData = _a[1];
-            var data = [];
-            for (var _i = 0, _b = chartData.data; _i < _b.length; _i++) {
-                var value = _b[_i];
-                data.push([value.date, value.rate]);
-            }
-            _this.chartsData = [
-                { type: 'area', name: _this._chartConfig.dataSeriesName, data: data }
-            ];
-            if (_this.chart && _this.chart.ref.series) {
-                while (_this.chart.ref.series.length > 0)
-                    _this.chart.ref.series[0].remove(false);
-            }
-            _this.chart.addSeries(_this.chartsData[0], true, true);
-            var price = currency.data[0].price;
-            var FV = data[data.length - 1][1];
-            var IV = data[data.length - _this._chartConfig.points][1];
-            var priceChange = (FV - IV) / IV * 100;
-            var btc = currency.data[0].price / currency.data[1].price;
-            // FV = data[data.length - 1][1]
-            // IV = data[data.length - this._chartConfig.points - 1][1]
-            var btcChange = 0; //(FV - IV) / IV * 100
-            var primaryPercentage = { fontSize: '16px', color: priceChange >= 0 ? 'green' : 'red', fontWeight: '600' };
-            var secondaryPercentage = { fontSize: '12px', color: btcChange >= 0 ? 'green' : 'red' };
-            if (!_this.group) {
-                _this.group = _this.chart.ref.renderer.g('customLabels');
-                _this.group.renderer.image(_this._chartConfig.imageLocation, _this._chartConfig.imageXPosition, _this._chartConfig.imageYPosition, _this._chartConfig.imageHeight, _this._chartConfig.imageWidth).attr({ zIndex: 90 }).add();
-                _this.group.renderer.label(_this._chartConfig.coin, _this._chartConfig.coinXPosition, _this._chartConfig.coinYPosition).css(_this._chartConfig.coinStyle).attr({ zIndex: 91 }).add();
-                _this.group.renderer.label(_this._chartConfig.coinName, _this._chartConfig.coinNameXPosition, _this._chartConfig.coinNameYPosition).css(_this._chartConfig.coinNameStyle).attr({ zIndex: 92 }).add();
-                _this.label1 = _this.group.renderer.label("$ " + price.toFixed(_this._chartConfig.primaryDecimalPlaces), _this.width1, _this._chartConfig.primaryPercentageLabelYPosition).css(_this._chartConfig.primaryPercentageLabelStyle).attr({ zIndex: 93 }).add();
-                _this.label1a = _this.group.renderer.label(priceChange.toFixed(_this._chartConfig.primaryPercentDecimalPlaces) + "%", _this.width1a, _this._chartConfig.primaryPercentageLabelYPosition).css(primaryPercentage).attr({ zIndex: 94 }).add();
-                _this.label2 = _this.group.renderer.label("B " + btc.toFixed(_this._chartConfig.secondaryDecimalPlaces), _this.width2, _this._chartConfig.secondaryPercentageLabelYPosition).css(_this._chartConfig.secondaryPercentageLabelStyle).attr({ zIndex: 95 }).add();
-                _this.label2a = _this.group.renderer.label(btcChange.toFixed(_this._chartConfig.secondaryPercentDecimalPlaces) + "%", _this.width2a, _this._chartConfig.secondaryPercentageLabelYPosition).css(secondaryPercentage).attr({ zIndex: 96 }).add();
-                _this.label3 = _this.group.renderer.label("This widget fetch data from Live Coin Watch [LCW]", 50, _this.height3).css({ fontSize: '14px', color: 'white', fontWeight: '800' }).attr({ zIndex: 97 }).add();
-            }
-            else {
-                _this.label1.attr({ text: "$ " + price.toFixed(_this._chartConfig.primaryDecimalPlaces) });
-                _this.label1a.attr({ text: priceChange.toFixed(_this._chartConfig.primaryPercentDecimalPlaces) + "%" });
-                _this.label2.attr({ text: "B " + btc.toFixed(_this._chartConfig.secondaryDecimalPlaces) });
-                _this.label2a.attr({ text: btcChange.toFixed(_this._chartConfig.secondaryPercentDecimalPlaces) + "%" });
+            if (_this.chart) {
+                var data = [];
+                for (var _i = 0, _b = chartData.data; _i < _b.length; _i++) {
+                    var value = _b[_i];
+                    data.push([value.date, value.rate]);
+                }
+                _this.chartsData = [
+                    { type: 'area', name: _this._chartConfig.dataSeriesName, data: data }
+                ];
+                if (_this.chart.ref.series) {
+                    while (_this.chart.ref.series.length > 0)
+                        _this.chart.ref.series[0].remove(false);
+                }
+                _this.chart.addSeries(_this.chartsData[0], true, true);
+                var price = currency.data[0].price;
+                var FV = data[data.length - 1][1];
+                var IV = data[data.length - _this._chartConfig.points][1];
+                var priceChange = (FV - IV) / IV * 100;
+                var btc = currency.data[0].price / currency.data[1].price;
+                // FV = data[data.length - 1][1]
+                // IV = data[data.length - this._chartConfig.points - 1][1]
+                var btcChange = 0; //(FV - IV) / IV * 100
+                var primaryPercentage = { fontSize: '16px', color: priceChange >= 0 ? 'green' : 'red', fontWeight: '600' };
+                var secondaryPercentage = { fontSize: '12px', color: btcChange >= 0 ? 'green' : 'red' };
+                if (!_this.group) {
+                    _this.group = _this.chart.ref.renderer.g('customLabels');
+                    _this.group.renderer.image(_this._chartConfig.imageLocation, _this._chartConfig.imageXPosition, _this._chartConfig.imageYPosition, _this._chartConfig.imageHeight, _this._chartConfig.imageWidth).attr({ zIndex: 90 }).add();
+                    _this.group.renderer.label(_this._chartConfig.coin, _this._chartConfig.coinXPosition, _this._chartConfig.coinYPosition).css(_this._chartConfig.coinStyle).attr({ zIndex: 91 }).add();
+                    _this.group.renderer.label(_this._chartConfig.coinName, _this._chartConfig.coinNameXPosition, _this._chartConfig.coinNameYPosition).css(_this._chartConfig.coinNameStyle).attr({ zIndex: 92 }).add();
+                    _this.label1 = _this.group.renderer.label("$ " + price.toFixed(_this._chartConfig.primaryDecimalPlaces), _this.width1, _this._chartConfig.primaryPercentageLabelYPosition).css(_this._chartConfig.primaryPercentageLabelStyle).attr({ zIndex: 93 }).add();
+                    _this.label1a = _this.group.renderer.label(priceChange.toFixed(_this._chartConfig.primaryPercentDecimalPlaces) + "%", _this.width1a, _this._chartConfig.primaryPercentageLabelYPosition).css(primaryPercentage).attr({ zIndex: 94 }).add();
+                    _this.label2 = _this.group.renderer.label("B " + btc.toFixed(_this._chartConfig.secondaryDecimalPlaces), _this.width2, _this._chartConfig.secondaryPercentageLabelYPosition).css(_this._chartConfig.secondaryPercentageLabelStyle).attr({ zIndex: 95 }).add();
+                    _this.label2a = _this.group.renderer.label(btcChange.toFixed(_this._chartConfig.secondaryPercentDecimalPlaces) + "%", _this.width2a, _this._chartConfig.secondaryPercentageLabelYPosition).css(secondaryPercentage).attr({ zIndex: 96 }).add();
+                    _this.label3 = _this.group.renderer.label("This widget fetch data from Live Coin Watch [LCW]", 50, _this.height3).css({ fontSize: '14px', color: 'white', fontWeight: '800' }).attr({ zIndex: 97 }).add();
+                }
+                else {
+                    _this.label1.attr({ text: "$ " + price.toFixed(_this._chartConfig.primaryDecimalPlaces) });
+                    _this.label1a.attr({ text: priceChange.toFixed(_this._chartConfig.primaryPercentDecimalPlaces) + "%" });
+                    _this.label2.attr({ text: "B " + btc.toFixed(_this._chartConfig.secondaryDecimalPlaces) });
+                    _this.label2a.attr({ text: btcChange.toFixed(_this._chartConfig.secondaryPercentDecimalPlaces) + "%" });
+                }
             }
         });
     };
